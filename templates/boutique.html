@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h2>Bracelet's</h2>
+    <nav>
+        <a href="/">Accueil</a>
+        <a href="/boutique">Boutique</a>
+        <a href="#">Panier</a>
+        <a href="#">Contact</a>
+    </nav>
+</header>
+
+<section class="boutique">
+    <h1>Notre boutique</h1>
+    <p>Découvrez nos bracelets artisanaux faits main.</p>
+
+    <div class="produits">
+        {% for produit in produits %}
+        <div class="produit-card">
+            <img src="{{ produit.image }}" alt="{{ produit.nom }}">
+            <h3>{{ produit.nom }}</h3>
+            <p>{{ produit.description }}</p>
+            <strong>{{ produit.prix }} €</strong>
+            <button>Ajouter au panier</button>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+</body>
+</html>
