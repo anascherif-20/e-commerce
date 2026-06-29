@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Panier - Bracelet's</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="logo">Bracelet's</div>
+    <nav>
+        <a href="/">Accueil</a>
+        <a href="/boutique">Boutique</a>
+        <a href="/personnalisation">Personnalisation</a>
+        <a href="/panier">Panier</a>
+        <a href="/connexion">Connexion</a>
+        <a href="/contact">Contact</a>
+    </nav>
+</header>
+
+<section class="panier-page">
+    <div class="titre-page">
+        <span>Votre sélection</span>
+        <h1>Mon panier</h1>
+        <p>Retrouvez ici les bracelets que vous souhaitez commander.</p>
+    </div>
+
+    <div class="panier-box">
+        <div class="panier-liste">
+            <div class="article-panier">
+                <div>
+                    <h3>Bracelet Luna</h3>
+                    <p>Couleur : Rose poudré · Taille : Standard</p>
+                </div>
+                <strong>19,99 €</strong>
+            </div>
+
+            <div class="article-panier">
+                <div>
+                    <h3>Bracelet Doré</h3>
+                    <p>Couleur : Doré · Taille : Ajustable</p>
+                </div>
+                <strong>22,50 €</strong>
+            </div>
+        </div>
+
+        <div class="resume-panier">
+            <h2>Résumé</h2>
+            <div class="ligne-total">
+                <span>Sous-total</span>
+                <strong>42,49 €</strong>
+            </div>
+            <div class="ligne-total">
+                <span>Livraison</span>
+                <strong>3,99 €</strong>
+            </div>
+            <div class="ligne-total total-final">
+                <span>Total</span>
+                <strong>46,48 €</strong>
+            </div>
+
+            <a href="#" class="btn-commande">Commander</a>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

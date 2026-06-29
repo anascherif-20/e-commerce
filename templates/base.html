@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Lunéa Atelier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="brand">Lunéa Atelier</div>
+
+    <nav>
+        <a href="/">Accueil</a>
+        <a href="/boutique">Boutique</a>
+        <a href="/personnalisation">Personnaliser</a>
+        <a href="/panier">Panier</a>
+        <a href="/connexion">Connexion</a>
+        <a href="/contact">Contact</a>
+    </nav>
+</header>
+
+{% block content %}{% endblock %}
+
+<footer>
+    <h3>Lunéa Atelier</h3>
+    <p>Bracelets personnalisés, créés avec amour.</p>
+    <p>© 2026 - Projet PFE</p>
+</footer>
+
+</body>
+</html>
