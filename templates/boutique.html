@@ -11,46 +11,32 @@
 </section>
 
 <section class="shop-categories">
-    <div class="category-card">Bracelets prénom</div>
-    <div class="category-card">Bracelets enfants</div>
-    <div class="category-card">Bracelets cadeaux</div>
-    <div class="category-card">Créations premium</div>
+    <a href="/boutique" class="category-card">Tous</a>
+    <a href="/boutique?categorie=prenom" class="category-card">Bracelets prénom</a>
+    <a href="/boutique?categorie=enfants" class="category-card">Bracelets enfants</a>
+    <a href="/boutique?categorie=cadeaux" class="category-card">Bracelets cadeaux</a>
+    <a href="/boutique?categorie=premium" class="category-card">Créations premium</a>
 </section>
 
 <section class="shop-products">
 
+    {% for produit in produits %}
     <div class="product-luxury">
-        <img src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=900">
-        <div class="product-content">
-            <span>Nouveau</span>
-            <h3>Bracelet Luna</h3>
-            <p>Perles nacrées, finition délicate et personnalisation possible.</p>
-            <strong>19,99 €</strong>
-            <a href="/personnalisation">Personnaliser</a>
+        <div class="product-placeholder">
+            <div class="fake-bracelet">
+                <span></span><span></span><strong>{{ produit.nom[0] }}</strong><span></span><span></span>
+            </div>
         </div>
-    </div>
 
-    <div class="product-luxury">
-        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=900">
         <div class="product-content">
-            <span>Best-seller</span>
-            <h3>Bracelet Élégance</h3>
-            <p>Un bracelet chic, idéal pour offrir ou compléter une tenue.</p>
-            <strong>24,99 €</strong>
+            <span>{{ produit.categorie }}</span>
+            <h3>{{ produit.nom }}</h3>
+            <p>{{ produit.description }}</p>
+            <strong>{{ produit.prix }} €</strong>
             <a href="/personnalisation">Personnaliser</a>
         </div>
     </div>
-
-    <div class="product-luxury">
-        <img src="https://images.unsplash.com/photo-1603974372039-adc49044b6bd?w=900">
-        <div class="product-content">
-            <span>Premium</span>
-            <h3>Bracelet Auréa</h3>
-            <p>Un modèle raffiné inspiré des bijoux haut de gamme.</p>
-            <strong>29,99 €</strong>
-            <a href="/personnalisation">Personnaliser</a>
-        </div>
-    </div>
+    {% endfor %}
 
 </section>
 

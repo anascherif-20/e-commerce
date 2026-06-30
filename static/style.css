@@ -1207,3 +1207,39 @@ PANIER
     color:#777;
     margin-top:25px;
 }
+.product-placeholder{
+    height:360px;
+    background:radial-gradient(circle at center, #3b2a19, #090909);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.fake-bracelet{
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+
+.fake-bracelet span,
+.fake-bracelet strong{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#f3ddb0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#111;
+    font-weight:bold;
+    box-shadow:0 0 25px rgba(212,175,55,.55);
+}
+
+.fake-bracelet span:nth-child(2),
+.fake-bracelet span:nth-child(4){
+    background:#d4af37;
+}
+
+.shop-categories a{
+    text-decoration:none;
+}
