@@ -1,69 +1,117 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Panier - Bracelet's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<header>
-    <div class="logo">Bracelet's</div>
-    <nav>
-        <a href="/">Accueil</a>
-        <a href="/boutique">Boutique</a>
-        <a href="/personnalisation">Personnalisation</a>
-        <a href="/panier">Panier</a>
-        <a href="/connexion">Connexion</a>
-        <a href="/contact">Contact</a>
-    </nav>
-</header>
+{% block content %}
 
-<section class="panier-page">
-    <div class="titre-page">
+<section class="cart-luxe-page">
+
+    <div class="cart-title">
         <span>Votre sélection</span>
         <h1>Mon panier</h1>
-        <p>Retrouvez ici les bracelets que vous souhaitez commander.</p>
+        <p>Vérifiez vos créations et finalisez votre commande.</p>
     </div>
 
-    <div class="panier-box">
-        <div class="panier-liste">
-            <div class="article-panier">
-                <div>
-                    <h3>Bracelet Luna</h3>
-                    <p>Couleur : Rose poudré · Taille : Standard</p>
+    <div class="cart-luxe-container">
+
+        <div class="cart-luxe-items">
+
+            <div class="cart-luxe-item">
+                <div class="cart-visual">
+                    <div class="mini-bracelet">
+                        <span></span><span></span><strong>L</strong><span></span><span></span>
+                    </div>
                 </div>
-                <strong>19,99 €</strong>
+
+                <div class="cart-details">
+                    <h2>Bracelet Luna</h2>
+                    <p><b>Couleur :</b> Rose poudré</p>
+                    <p><b>Taille :</b> Standard</p>
+                    <p><b>Lettre :</b> L</p>
+
+                    <div class="cart-actions">
+                        <button>-</button>
+                        <span>1</span>
+                        <button>+</button>
+                        <a href="#">Supprimer</a>
+                    </div>
+                </div>
+
+                <div class="cart-item-price">19,99 €</div>
             </div>
 
-            <div class="article-panier">
-                <div>
-                    <h3>Bracelet Doré</h3>
-                    <p>Couleur : Doré · Taille : Ajustable</p>
+            <div class="cart-luxe-item">
+                <div class="cart-visual">
+                    <div class="mini-bracelet">
+                        <span></span><span></span><strong>A</strong><span></span><span></span>
+                    </div>
                 </div>
-                <strong>22,50 €</strong>
+
+                <div class="cart-details">
+                    <h2>Bracelet Doré</h2>
+                    <p><b>Couleur :</b> Doré</p>
+                    <p><b>Taille :</b> Ajustable</p>
+                    <p><b>Lettre :</b> A</p>
+
+                    <div class="cart-actions">
+                        <button>-</button>
+                        <span>1</span>
+                        <button>+</button>
+                        <a href="#">Supprimer</a>
+                    </div>
+                </div>
+
+                <div class="cart-item-price">22,50 €</div>
             </div>
+
+            <div class="cart-benefits">
+                <div>
+                    <strong>Fait main</strong>
+                    <p>Avec amour</p>
+                </div>
+                <div>
+                    <strong>Matériaux premium</strong>
+                    <p>Qualité supérieure</p>
+                </div>
+                <div>
+                    <strong>Emballage soigné</strong>
+                    <p>Prêt à offrir</p>
+                </div>
+            </div>
+
         </div>
 
-        <div class="resume-panier">
-            <h2>Résumé</h2>
-            <div class="ligne-total">
+        <div class="cart-luxe-summary">
+
+            <h2>Résumé de commande</h2>
+
+            <div class="summary-line">
                 <span>Sous-total</span>
                 <strong>42,49 €</strong>
             </div>
-            <div class="ligne-total">
+
+            <div class="summary-line">
                 <span>Livraison</span>
-                <strong>3,99 €</strong>
-            </div>
-            <div class="ligne-total total-final">
-                <span>Total</span>
-                <strong>46,48 €</strong>
+                <strong>0,00 €</strong>
             </div>
 
-            <a href="#" class="btn-commande">Commander</a>
+            <div class="free-shipping">
+                Livraison offerte dès 25 € d'achat !
+            </div>
+
+            <hr>
+
+            <div class="summary-total">
+                <span>Total</span>
+                <strong>42,49 €</strong>
+            </div>
+
+            <button>Commander</button>
+
+            <p class="secure-payment">Paiement 100% sécurisé</p>
+
         </div>
+
     </div>
+
 </section>
 
-</body>
-</html>
+{% endblock %}
