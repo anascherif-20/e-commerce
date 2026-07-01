@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from database import cursor, db
 
 app = Flask(__name__)
+
+app.secret_key = "change_cette_cle_secrete_avant_mise_en_ligne"
+
 
 @app.route("/")
 def accueil():
@@ -13,10 +17,7 @@ def boutique():
     categorie = request.args.get("categorie")
 
     if categorie:
-        cursor.execute(
-            "SELECT * FROM produits WHERE categorie = %s",
-            (categorie,)
-        )
+        cursor.execute("SELECT * FROM produits WHERE categorie = %s", (categorie,))
     else:
         cursor.execute("SELECT * FROM produits")
 
@@ -31,11 +32,31 @@ def personnalisation():
 
 @app.route("/panier")
 def panier():
+    if "utilisateur_id" not in session:
+        return redirect("/connexion")
+
     return render_template("panier.html")
 
 
-@app.route("/connexion")
+@app.route("/connexion", methods=["GET", "POST"])
 def connexion():
+    if request.method == "POST":
+        email = request.form["email"]
+        mot_de_passe = request.form["mot_de_passe"]
+
+        cursor.execute("SELECT * FROM utilisateurs WHERE email = %s", (email,))
+        utilisateur = cursor.fetchone()
+
+        if utilisateur and check_password_hash(utilisateur["mot_de_passe"], mot_de_passe):
+            session["utilisateur_id"] = utilisateur["id"]
+            session["prenom"] = utilisateur["prenom"]
+            return redirect("/")
+        else:
+            return render_template(
+                "connexion.html",
+                erreur="Email ou mot de passe incorrect."
+            )
+
     return render_template("connexion.html")
 
 
@@ -47,19 +68,34 @@ def inscription():
         email = request.form["email"]
         mot_de_passe = request.form["mot_de_passe"]
 
-        cursor.execute(
-            """
-            INSERT INTO utilisateurs
-            (nom, prenom, email, mot_de_passe)
-            VALUES (%s, %s, %s, %s)
-            """,
-            (nom, prenom, email, mot_de_passe)
-        )
+        mot_de_passe_hash = generate_password_hash(mot_de_passe)
 
-        db.commit()
-        return redirect("/connexion")
+        try:
+            cursor.execute(
+                """
+                INSERT INTO utilisateurs
+                (nom, prenom, email, mot_de_passe)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (nom, prenom, email, mot_de_passe_hash)
+            )
+
+            db.commit()
+            return redirect("/connexion")
+
+        except Exception:
+            return render_template(
+                "inscription.html",
+                erreur="Cette adresse email est déjà utilisée."
+            )
 
     return render_template("inscription.html")
+
+
+@app.route("/deconnexion")
+def deconnexion():
+    session.clear()
+    return redirect("/")
 
 
 @app.route("/contact")

@@ -15,8 +15,14 @@
         <a href="/boutique">Boutique</a>
         <a href="/personnalisation">Personnaliser</a>
         <a href="/panier">Panier</a>
-        <a href="/connexion">Connexion</a>
         <a href="/contact">Contact</a>
+
+        {% if session.get("utilisateur_id") %}
+            <span class="nav-user">Bonjour {{ session.get("prenom") }}</span>
+            <a href="/deconnexion">Déconnexion</a>
+        {% else %}
+            <a href="/connexion">Connexion</a>
+        {% endif %}
     </nav>
 </header>
 
