@@ -2,15 +2,22 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Lunéa Atelier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAILLE & CO</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <header class="navbar">
-    <div class="brand">Lunéa Atelier</div>
 
-    <nav>
+    <a href="/" class="brand">
+        MAILLE & CO
+    </a>
+
+    <nav class="nav-links">
+
         <a href="/">Accueil</a>
         <a href="/boutique">Boutique</a>
         <a href="/personnalisation">Personnaliser</a>
@@ -18,20 +25,46 @@
         <a href="/contact">Contact</a>
 
         {% if session.get("utilisateur_id") %}
-            <span class="nav-user">Bonjour {{ session.get("prenom") }}</span>
-            <a href="/deconnexion">Déconnexion</a>
+
+            <span class="nav-user">
+                Bonjour {{ session.get("prenom") }}
+            </span>
+
+            <a href="/deconnexion" class="nav-btn">
+                Déconnexion
+            </a>
+
         {% else %}
-            <a href="/connexion">Connexion</a>
+
+            <a href="/connexion" class="nav-btn">
+                Connexion
+            </a>
+
         {% endif %}
+
     </nav>
+
 </header>
 
-{% block content %}{% endblock %}
+<main>
 
-<footer>
-    <h3>Lunéa Atelier</h3>
-    <p>Bracelets personnalisés, créés avec amour.</p>
-    <p>© 2026 - Projet PFE</p>
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+<footer class="footer">
+
+    <h3>MAILLE & CO</h3>
+
+    <p>
+        Bracelets artisanaux • Créations personnalisées • Faits main
+    </p>
+
+    <p>
+        © 2026 - Projet de fin de stage
+    </p>
+
 </footer>
 
 </body>

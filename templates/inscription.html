@@ -7,16 +7,51 @@
         <span>Créer un compte</span>
         <h1>Inscription</h1>
 
-        <form method="POST" action="/inscription">
-            <input type="text" name="nom" placeholder="Nom" required>
-            <input type="text" name="prenom" placeholder="Prénom" required>
-            <input type="email" name="email" placeholder="Adresse email" required>
-            <input type="password" name="mot_de_passe" placeholder="Mot de passe" required>
+        {% if erreur %}
+            <p class="auth-error">{{ erreur }}</p>
+        {% endif %}
 
-            <button type="submit">Créer mon compte</button>
+        <form method="POST" action="/inscription">
+
+            <input
+                type="text"
+                name="nom"
+                placeholder="Nom"
+                required
+            >
+
+            <input
+                type="text"
+                name="prenom"
+                placeholder="Prénom"
+                required
+            >
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Adresse email"
+                required
+            >
+
+            <input
+                type="password"
+                name="mot_de_passe"
+                placeholder="Mot de passe"
+                required
+            >
+
+            <button type="submit">
+                Créer mon compte
+            </button>
+
         </form>
 
-        <p>Déjà un compte ? <a href="/connexion">Se connecter</a></p>
+        <p>
+            Déjà inscrit ?
+            <a href="/connexion">Se connecter</a>
+        </p>
+
     </div>
 </section>
 
