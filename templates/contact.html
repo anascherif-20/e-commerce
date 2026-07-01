@@ -1,23 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Contact - Bracelet's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<header>
-    <div class="logo">Bracelet's</div>
-    <nav>
-        <a href="/">Accueil</a>
-        <a href="/boutique">Boutique</a>
-        <a href="/personnalisation">Personnalisation</a>
-        <a href="/panier">Panier</a>
-        <a href="/connexion">Connexion</a>
-        <a href="/contact">Contact</a>
-    </nav>
-</header>
+{% block content %}
 
 <section class="contact-page">
     <div class="contact-intro">
@@ -28,22 +11,21 @@
 
     <div class="contact-box">
         <div class="contact-info">
-            <h2>Bracelet's Atelier</h2>
-            <p>Créations artisanales personnalisées.</p>
+            <h2>Lunéa Atelier</h2>
+            <p>Créations artisanales personnalisées, faites avec amour.</p>
 
             <div class="info-line">📍 Paris, France</div>
-            <div class="info-line">📧 contact@bracelets.fr</div>
+            <div class="info-line">📧 contact@lunea-atelier.fr</div>
             <div class="info-line">📞 01 23 45 67 89</div>
         </div>
 
         <form class="contact-form">
-            <input type="text" placeholder="Votre nom">
-            <input type="email" placeholder="Votre email">
-            <textarea placeholder="Votre message"></textarea>
+            <input type="text" placeholder="Votre nom" required>
+            <input type="email" placeholder="Votre email" required>
+            <textarea placeholder="Votre message" required></textarea>
             <button type="submit">Envoyer le message</button>
         </form>
     </div>
 </section>
 
-</body>
-</html>
+{% endblock %}

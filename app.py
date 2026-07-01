@@ -1,10 +1,12 @@
+import os
 from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from database import cursor, db
+from database import get_db
 
 app = Flask(__name__)
 
-app.secret_key = "change_cette_cle_secrete_avant_mise_en_ligne"
+# Set SECRET_KEY via environment variable in production; fallback only for local dev.
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
 
 
 @app.route("/")
@@ -15,13 +17,17 @@ def accueil():
 @app.route("/boutique")
 def boutique():
     categorie = request.args.get("categorie")
+    db, cursor = get_db()
+    try:
+        if categorie:
+            cursor.execute("SELECT * FROM produits WHERE categorie = %s", (categorie,))
+        else:
+            cursor.execute("SELECT * FROM produits")
+        produits = cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
 
-    if categorie:
-        cursor.execute("SELECT * FROM produits WHERE categorie = %s", (categorie,))
-    else:
-        cursor.execute("SELECT * FROM produits")
-
-    produits = cursor.fetchall()
     return render_template("boutique.html", produits=produits)
 
 
@@ -34,7 +40,6 @@ def personnalisation():
 def panier():
     if "utilisateur_id" not in session:
         return redirect("/connexion")
-
     return render_template("panier.html")
 
 
@@ -44,18 +49,20 @@ def connexion():
         email = request.form["email"]
         mot_de_passe = request.form["mot_de_passe"]
 
-        cursor.execute("SELECT * FROM utilisateurs WHERE email = %s", (email,))
-        utilisateur = cursor.fetchone()
+        db, cursor = get_db()
+        try:
+            cursor.execute("SELECT * FROM utilisateurs WHERE email = %s", (email,))
+            utilisateur = cursor.fetchone()
+        finally:
+            cursor.close()
+            db.close()
 
         if utilisateur and check_password_hash(utilisateur["mot_de_passe"], mot_de_passe):
             session["utilisateur_id"] = utilisateur["id"]
             session["prenom"] = utilisateur["prenom"]
             return redirect("/")
-        else:
-            return render_template(
-                "connexion.html",
-                erreur="Email ou mot de passe incorrect."
-            )
+
+        return render_template("connexion.html", erreur="Email ou mot de passe incorrect.")
 
     return render_template("connexion.html")
 
@@ -66,28 +73,22 @@ def inscription():
         nom = request.form["nom"]
         prenom = request.form["prenom"]
         email = request.form["email"]
-        mot_de_passe = request.form["mot_de_passe"]
+        mot_de_passe = generate_password_hash(request.form["mot_de_passe"])
 
-        mot_de_passe_hash = generate_password_hash(mot_de_passe)
-
+        db, cursor = get_db()
         try:
             cursor.execute(
-                """
-                INSERT INTO utilisateurs
-                (nom, prenom, email, mot_de_passe)
-                VALUES (%s, %s, %s, %s)
-                """,
-                (nom, prenom, email, mot_de_passe_hash)
+                "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe) VALUES (%s, %s, %s, %s)",
+                (nom, prenom, email, mot_de_passe),
             )
-
             db.commit()
-            return redirect("/connexion")
-
         except Exception:
-            return render_template(
-                "inscription.html",
-                erreur="Cette adresse email est déjà utilisée."
-            )
+            return render_template("inscription.html", erreur="Cette adresse email est déjà utilisée.")
+        finally:
+            cursor.close()
+            db.close()
+
+        return redirect("/connexion")
 
     return render_template("inscription.html")
 

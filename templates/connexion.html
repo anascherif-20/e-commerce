@@ -1,39 +1,25 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Connexion - Bracelet's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-<header>
-    <div class="logo">Bracelet's</div>
-    <nav>
-        <a href="/">Accueil</a>
-        <a href="/boutique">Boutique</a>
-        <a href="/personnalisation">Personnalisation</a>
-        <a href="/panier">Panier</a>
-        <a href="/connexion">Connexion</a>
-        <a href="/contact">Contact</a>
-    </nav>
-</header>
+{% block content %}
 
-<section class="connexion-page">
-    <div class="connexion-box">
+<section class="auth-page">
+    <div class="auth-box">
         <span>Espace client</span>
         <h1>Connexion</h1>
         <p>Connectez-vous pour retrouver vos commandes et vos bracelets favoris.</p>
 
-        <form>
-            <input type="email" placeholder="Adresse email">
-            <input type="password" placeholder="Mot de passe">
+        {% if erreur %}
+            <div class="auth-error">{{ erreur }}</div>
+        {% endif %}
+
+        <form method="POST" action="/connexion">
+            <input type="email" name="email" placeholder="Adresse email" required>
+            <input type="password" name="mot_de_passe" placeholder="Mot de passe" required>
             <button type="submit">Se connecter</button>
         </form>
 
-        <p class="small-text">Pas encore de compte ? Créer un compte</p>
+        <p>Pas encore de compte ? <a href="/inscription">Créer un compte</a></p>
     </div>
 </section>
 
-</body>
-</html>
+{% endblock %}

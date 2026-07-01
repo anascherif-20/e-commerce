@@ -7,6 +7,10 @@
         <span>Créer un compte</span>
         <h1>Inscription</h1>
 
+        {% if erreur %}
+            <div class="auth-error">{{ erreur }}</div>
+        {% endif %}
+
         <form method="POST" action="/inscription">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="prenom" placeholder="Prénom" required>

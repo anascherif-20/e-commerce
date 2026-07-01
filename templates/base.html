@@ -2,15 +2,19 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lunéa Atelier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header class="navbar">
-    <div class="brand">Lunéa Atelier</div>
+    <a href="/" class="brand">Lunéa Atelier</a>
 
-    <nav>
+    <nav id="main-nav">
         <a href="/">Accueil</a>
         <a href="/boutique">Boutique</a>
         <a href="/personnalisation">Personnaliser</a>
@@ -18,12 +22,18 @@
         <a href="/contact">Contact</a>
 
         {% if session.get("utilisateur_id") %}
-            <span class="nav-user">Bonjour {{ session.get("prenom") }}</span>
+            <span class="nav-user">Bonjour, {{ session.get("prenom") }}</span>
             <a href="/deconnexion">Déconnexion</a>
         {% else %}
             <a href="/connexion">Connexion</a>
         {% endif %}
     </nav>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </header>
 
 {% block content %}{% endblock %}
@@ -31,8 +41,17 @@
 <footer>
     <h3>Lunéa Atelier</h3>
     <p>Bracelets personnalisés, créés avec amour.</p>
-    <p>© 2026 - Projet PFE</p>
+    <p>© 2026 Lunéa Atelier — Projet PFE</p>
 </footer>
+
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const nav = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', open);
+    });
+</script>
 
 </body>
 </html>
