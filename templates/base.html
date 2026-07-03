@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lunéa Atelier</title>
+    <title>{% block title %}Lunéa Atelier{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📿</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<header class="navbar">
+<div class="orb-rose"></div>
+
+<header class="navbar" id="navbar">
     <a href="/" class="brand">Lunéa Atelier</a>
 
-    <nav id="main-nav">
-        <a href="/">Accueil</a>
-        <a href="/boutique">Boutique</a>
-        <a href="/personnalisation">Personnaliser</a>
-        <a href="/panier">Panier</a>
-        <a href="/contact">Contact</a>
+    <nav id="main-nav" aria-label="Navigation principale">
+        <a href="/" class="{{ 'active' if request.path == '/' else '' }}">Accueil</a>
+        <a href="/boutique" class="{{ 'active' if request.path == '/boutique' else '' }}">Boutique</a>
+        <a href="/personnalisation" class="{{ 'active' if request.path == '/personnalisation' else '' }}">Personnaliser</a>
+        <a href="/panier" class="{{ 'active' if request.path == '/panier' else '' }}">Panier</a>
+        <a href="/contact" class="{{ 'active' if request.path == '/contact' else '' }}">Contact</a>
 
         {% if session.get("utilisateur_id") %}
-            <span class="nav-user">Bonjour, {{ session.get("prenom") }}</span>
+            <a href="/profil" class="nav-user {{ 'active' if request.path == '/profil' else '' }}">Bonjour, {{ session.get("prenom") }}</a>
             <a href="/deconnexion">Déconnexion</a>
         {% else %}
-            <a href="/connexion">Connexion</a>
+            <a href="/connexion" class="{{ 'active' if request.path in ('/connexion', '/inscription') else '' }}">Connexion</a>
         {% endif %}
     </nav>
 
@@ -36,7 +39,9 @@
     </button>
 </header>
 
+<main>
 {% block content %}{% endblock %}
+</main>
 
 <footer>
     <h3>Lunéa Atelier</h3>
@@ -44,13 +49,123 @@
     <p>© 2026 Lunéa Atelier — Projet PFE</p>
 </footer>
 
+<!-- Toast container -->
+<div id="toast-container" class="toast-container"></div>
+
 <script>
+    /* ---- Hamburger ---- */
     const hamburger = document.getElementById('hamburger');
     const nav = document.getElementById('main-nav');
     hamburger.addEventListener('click', () => {
         const open = nav.classList.toggle('open');
+        hamburger.classList.toggle('open', open);
         hamburger.setAttribute('aria-expanded', open);
     });
+    /* Close the menu when clicking outside the navbar */
+    document.addEventListener('click', (e) => {
+        if (nav.classList.contains('open') && !e.target.closest('.navbar')) {
+            nav.classList.remove('open');
+            hamburger.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    /* ---- Navbar: denser glass once the page scrolls ---- */
+    const navbar = document.getElementById('navbar');
+    const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 24);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    /* ---- Toast system ---- */
+    function showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+
+        const icons = { success: '✓', error: '✕', info: 'i' };
+        const icon  = icons[type] || 'i';
+
+        toast.innerHTML =
+            '<div class="toast-icon">' + icon + '</div>' +
+            '<span class="toast-msg"></span>' +
+            '<button class="toast-close" aria-label="Fermer">✕</button>';
+        toast.querySelector('.toast-msg').textContent = message;
+
+        toast.querySelector('.toast-close').addEventListener('click', () => dismissToast(toast));
+        container.appendChild(toast);
+
+        setTimeout(() => dismissToast(toast), 4500);
+    }
+
+    function dismissToast(toast) {
+        if (toast.classList.contains('removing')) return;
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 340);
+    }
+
+    /* ---- Fire Flask flash messages as toasts ---- */
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    showToast({{ message|tojson }}, {{ category|tojson }});
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    /* ---- Scroll reveal ---- */
+    const revealTargets = document.querySelectorAll(
+        '.hero-content, .hero-stats > div, .shop-hero > div, .category-card,' +
+        '.product-luxury, .custom-intro, .custom-preview, .custom-form,' +
+        '.cart-title, .cart-luxe-items, .cart-luxe-summary, .cart-empty,' +
+        '.shop-empty, .contact-intro, .contact-box, .auth-box'
+    );
+    if ('IntersectionObserver' in window && revealTargets.length) {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        revealTargets.forEach((el, i) => {
+            el.classList.add('reveal');
+            el.style.transitionDelay = (i % 5) * 70 + 'ms';
+            io.observe(el);
+        });
+    }
+
+    /* ---- 3D tilt + cursor glare on product cards ---- */
+    document.querySelectorAll('.product-luxury').forEach(card => {
+        card.addEventListener('pointermove', (e) => {
+            if (e.pointerType !== 'mouse') return;
+            const r = card.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width;
+            const y = (e.clientY - r.top) / r.height;
+            card.style.setProperty('--rx', ((0.5 - y) * 5).toFixed(2) + 'deg');
+            card.style.setProperty('--ry', ((x - 0.5) * 7).toFixed(2) + 'deg');
+            card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+            card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+        });
+        card.addEventListener('pointerleave', () => {
+            card.style.setProperty('--rx', '0deg');
+            card.style.setProperty('--ry', '0deg');
+        });
+    });
+
+    /* ---- Parallax on the hero's floating beads ---- */
+    const beads = document.querySelectorAll('.float-bead');
+    if (beads.length && matchMedia('(pointer: fine)').matches) {
+        window.addEventListener('pointermove', (e) => {
+            const dx = (e.clientX / window.innerWidth) - 0.5;
+            const dy = (e.clientY / window.innerHeight) - 0.5;
+            beads.forEach(b => {
+                const depth = parseFloat(b.dataset.depth || 0.3);
+                b.style.transform = 'translate(' + (dx * 60 * depth).toFixed(1) + 'px, ' + (dy * 40 * depth).toFixed(1) + 'px)';
+            });
+        }, { passive: true });
+    }
 </script>
 
 </body>

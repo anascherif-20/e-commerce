@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 
+{% block title %}Lunéa Atelier — Bracelets personnalisés{% endblock %}
+
 {% block content %}
 
 <section class="hero-luxe">
+
+    <div class="hero-beads" aria-hidden="true">
+        <span class="float-bead b1" data-depth="0.35"></span>
+        <span class="float-bead b2" data-depth="0.2"></span>
+        <span class="float-bead b3" data-depth="0.5"></span>
+        <span class="float-bead b4" data-depth="0.15"></span>
+        <span class="float-bead b5" data-depth="0.45"></span>
+        <span class="float-bead b6" data-depth="0.25"></span>
+    </div>
+
     <div class="hero-content">
         <p class="tagline">Créations artisanales personnalisées</p>
 
-        <h1>Des bracelets uniques pour chaque histoire</h1>
+        <h1>Des bracelets <span class="grad-text">uniques</span><br>pour chaque histoire</h1>
 
         <p class="hero-description">
             Découvre des bracelets faits main, élégants et personnalisables selon tes envies.
@@ -15,6 +27,91 @@
         <div class="hero-buttons">
             <a href="/boutique" class="btn-gold">Voir la boutique</a>
             <a href="/personnalisation" class="btn-outline">Créer mon bracelet</a>
+        </div>
+
+        <div class="hero-stats">
+            <div>
+                <strong>100%</strong>
+                <span>Fait main</span>
+            </div>
+            <div>
+                <strong>500+</strong>
+                <span>Créations livrées</span>
+            </div>
+            <div>
+                <strong>4,9/5</strong>
+                <span>Avis clients</span>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<section class="home-features">
+    <div class="section-title">
+        <span>Nos collections</span>
+        <h2>Faits main pour vos moments précieux</h2>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card glass-panel">
+            <div class="feature-img-box">
+                <img src="/static/images/rose.jpg" alt="Collection Prénom">
+            </div>
+            <div class="feature-card-content">
+                <h3>Bracelets Prénoms</h3>
+                <p>Gravez un prénom ou un mot doux sur un charm en argent ou en or.</p>
+                <a href="/boutique?categorie=prenom" class="btn-text">Découvrir →</a>
+            </div>
+        </div>
+        
+        <div class="feature-card glass-panel">
+            <div class="feature-img-box">
+                <img src="/static/images/enfant.jpg" alt="Collection Enfant">
+            </div>
+            <div class="feature-card-content">
+                <h3>Collection Enfants</h3>
+                <p>Des perles colorées et légères adaptées pour les plus petits.</p>
+                <a href="/boutique?categorie=enfants" class="btn-text">Découvrir →</a>
+            </div>
+        </div>
+        
+        <div class="feature-card glass-panel">
+            <div class="feature-img-box">
+                <img src="/static/images/premium.jpg" alt="Créations Premium">
+            </div>
+            <div class="feature-card-content">
+                <h3>Créations Premium</h3>
+                <p>Des designs raffinés avec cristaux et perles dorées d'exception.</p>
+                <a href="/boutique?categorie=premium" class="btn-text">Découvrir →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="home-process">
+    <div class="section-title">
+        <span>Savoir-faire</span>
+        <h2>Comment ça marche ?</h2>
+    </div>
+    
+    <div class="process-steps">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Personnalisez</h3>
+            <p>Saisissez le texte, choisissez la couleur de vos perles et la taille du bracelet.</p>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Assemblage artisanal</h3>
+            <p>Chaque bracelet est tressé à la main avec soin dans notre atelier parisien.</p>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Livraison soignée</h3>
+            <p>Votre création est expédiée dans un écrin élégant, prête à être offerte.</p>
         </div>
     </div>
 </section>

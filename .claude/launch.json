@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "flask-dev",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", ".venv/bin/python -m flask --app app run --port $PORT --no-reload"],
+      "port": 5001,
+      "autoPort": true
+    }
+  ]
+}

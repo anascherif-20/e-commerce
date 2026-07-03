@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Mon profil — Lunéa Atelier{% endblock %}
+
+{% block content %}
+
+<section class="profile-page">
+
+    <!-- Identity card -->
+    <div class="profile-header">
+        <div class="profile-avatar">{{ utilisateur.prenom[0]|upper }}{{ utilisateur.nom[0]|upper }}</div>
+
+        <div class="profile-identity">
+            <h1>{{ utilisateur.prenom }} {{ utilisateur.nom }}</h1>
+            {% if membre_depuis %}
+            <p class="profile-since">Membre depuis le {{ membre_depuis }}</p>
+            {% endif %}
+            <div class="profile-meta">
+                <span>📧 {{ utilisateur.email }}</span>
+                {% if utilisateur.telephone %}
+                <span>📞 {{ utilisateur.telephone }}</span>
+                {% endif %}
+                {% if commandes|length >= 3 %}
+                <span class="badge-fidele">✦ Cliente fidèle</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <a href="/deconnexion" class="btn-outline profile-logout">Déconnexion</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="profile-stats">
+        <div>
+            <strong>{{ commandes|length }}</strong>
+            <span>Commande{{ 's' if commandes|length > 1 else '' }}</span>
+        </div>
+        <div>
+            <strong>{{ total_articles }}</strong>
+            <span>Bracelet{{ 's' if total_articles > 1 else '' }} commandé{{ 's' if total_articles > 1 else '' }}</span>
+        </div>
+        <div>
+            <strong>{{ "%.2f"|format(total_depense)|replace('.', ',') }} €</strong>
+            <span>Total dépensé</span>
+        </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="orders-header">
+        <h2>Mes commandes</h2>
+        {% if commandes %}<span class="orders-count">{{ commandes|length }}</span>{% endif %}
+    </div>
+
+    {% if commandes %}
+
+    {% for commande in commandes %}
+    <div class="order-card {{ 'open' if loop.first else '' }}">
+        <button type="button" class="order-head" aria-expanded="{{ 'true' if loop.first else 'false' }}">
+            <div class="order-id">
+                <span class="order-num">Commande #{{ commande.id }}</span>
+                <span class="order-date">{{ commande.date_affichee }} · {{ commande.nb_articles }} article{{ 's' if commande.nb_articles > 1 else '' }}</span>
+            </div>
+
+            {% set st = (commande.statut or 'En attente')|lower %}
+            <span class="order-status {{ 'st-livree' if 'livr' in st else 'st-expediee' if 'exp' in st else 'st-annulee' if 'annul' in st else 'st-attente' }}">
+                {{ commande.statut or 'En attente' }}
+            </span>
+
+            <span class="order-total">{{ "%.2f"|format(commande.montant_total)|replace('.', ',') }} €</span>
+            <span class="order-chevron" aria-hidden="true">⌄</span>
+        </button>
+
+        <div class="order-body">
+            <div class="order-body-inner">
+                <div class="order-items">
+                    {% for article in commande.articles %}
+                    <div class="order-item">
+                        <div class="order-item-img">
+                            {% if article.perso_texte %}
+                                <span aria-hidden="true">✨</span>
+                            {% elif article.produit_image %}
+                                <img src="{{ url_for('static', filename=article.produit_image) }}" alt="{{ article.produit_nom }}">
+                            {% else %}
+                                <span aria-hidden="true">📿</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="order-item-info">
+                            <h4>
+                                {{ article.produit_nom }}
+                                {% if article.perso_texte %} — personnalisé{% endif %}
+                            </h4>
+                            <p>{{ article.produit_categorie }}</p>
+                            {% if article.perso_texte %}
+                            <p class="order-item-perso">
+                                « {{ article.perso_texte }} » · {{ article.perso_couleur }} · {{ article.perso_taille }} · {{ article.perso_perles }}
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="order-item-price">
+                            <span class="qty">{{ article.quantite }} × {{ "%.2f"|format(article.prix_unitaire)|replace('.', ',') }} €</span>
+                            <span class="amount">{{ "%.2f"|format(article.quantite * article.prix_unitaire)|replace('.', ',') }} €</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% else %}
+
+    <div class="orders-empty">
+        <div class="cart-empty-icon">🎁</div>
+        <h3>Aucune commande pour le moment</h3>
+        <p>Vos futures commandes apparaîtront ici, avec leur suivi et leurs détails.</p>
+        <a href="/boutique" class="btn-gold">Découvrir la boutique</a>
+    </div>
+
+    {% endif %}
+
+</section>
+
+<script>
+    /* Accordion — one click on a header toggles its order card */
+    document.querySelectorAll('.order-head').forEach(head => {
+        head.addEventListener('click', () => {
+            const card = head.closest('.order-card');
+            const open = card.classList.toggle('open');
+            head.setAttribute('aria-expanded', open);
+        });
+    });
+</script>
+
+{% endblock %}

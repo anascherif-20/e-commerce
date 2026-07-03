@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Mon panier — Lunéa Atelier{% endblock %}
+
 {% block content %}
 
 <section class="cart-luxe-page">
@@ -10,57 +12,63 @@
         <p>Vérifiez vos créations et finalisez votre commande.</p>
     </div>
 
+    {% if articles %}
+
     <div class="cart-luxe-container">
 
         <div class="cart-luxe-items">
 
+            {% for article in articles %}
             <div class="cart-luxe-item">
+
                 <div class="cart-visual">
-                    <div class="mini-bracelet">
-                        <span></span><span></span><strong>L</strong><span></span><span></span>
+                    {% if article.is_custom %}
+                    <div class="mini-bracelet" data-texte="{{ article.custom_details.texte }}" data-couleur="{{ article.custom_details.couleur }}" data-perles="{{ article.custom_details.type_perles }}">
+                        <span></span>
+                        <span></span>
+                        <strong>{{ article.produit.nom[0] }}</strong>
+                        <span></span>
+                        <span></span>
                     </div>
+                    {% else %}
+                    <img src="{{ url_for('static', filename=article.produit.image) }}" alt="{{ article.produit.nom }}">
+                    {% endif %}
                 </div>
 
                 <div class="cart-details">
-                    <h2>Bracelet Luna</h2>
-                    <p><b>Couleur :</b> Rose poudré</p>
-                    <p><b>Taille :</b> Standard</p>
-                    <p><b>Lettre :</b> L</p>
+                    <h2>{{ article.produit.nom }}</h2>
+                    <p><b>Catégorie :</b> {{ article.produit.categorie }}</p>
+                    <p><b>Prix unitaire :</b> {{ "%.2f"|format(article.produit.prix) }} €</p>
+                    
+                    {% if article.is_custom %}
+                    <div class="cart-custom-details">
+                        <b>Personnalisation :</b> "{{ article.custom_details.texte }}" | Couleur : {{ article.custom_details.couleur }} | Taille : {{ article.custom_details.taille }} | Perles : {{ article.custom_details.type_perles }}
+                    </div>
+                    {% endif %}
 
                     <div class="cart-actions">
-                        <button>-</button>
-                        <span>1</span>
-                        <button>+</button>
-                        <a href="#">Supprimer</a>
+                        <form method="POST" action="/panier/modifier/{{ article.key }}">
+                            <input type="hidden" name="action" value="decrementer">
+                            <button type="submit">−</button>
+                        </form>
+
+                        <span>{{ article.quantite }}</span>
+
+                        <form method="POST" action="/panier/modifier/{{ article.key }}">
+                            <input type="hidden" name="action" value="incrementer">
+                            <button type="submit">+</button>
+                        </form>
+
+                        <form method="POST" action="/panier/supprimer/{{ article.key }}">
+                            <button type="submit" class="btn-supprimer">Supprimer</button>
+                        </form>
                     </div>
                 </div>
 
-                <div class="cart-item-price">19,99 €</div>
+                <div class="cart-item-price">{{ "%.2f"|format(article.sous_total) }} €</div>
+
             </div>
-
-            <div class="cart-luxe-item">
-                <div class="cart-visual">
-                    <div class="mini-bracelet">
-                        <span></span><span></span><strong>A</strong><span></span><span></span>
-                    </div>
-                </div>
-
-                <div class="cart-details">
-                    <h2>Bracelet Doré</h2>
-                    <p><b>Couleur :</b> Doré</p>
-                    <p><b>Taille :</b> Ajustable</p>
-                    <p><b>Lettre :</b> A</p>
-
-                    <div class="cart-actions">
-                        <button>-</button>
-                        <span>1</span>
-                        <button>+</button>
-                        <a href="#">Supprimer</a>
-                    </div>
-                </div>
-
-                <div class="cart-item-price">22,50 €</div>
-            </div>
+            {% endfor %}
 
             <div class="cart-benefits">
                 <div>
@@ -85,26 +93,28 @@
 
             <div class="summary-line">
                 <span>Sous-total</span>
-                <strong>42,49 €</strong>
+                <span>{{ "%.2f"|format(total) }} €</span>
             </div>
 
             <div class="summary-line">
                 <span>Livraison</span>
-                <strong>0,00 €</strong>
+                <span>{% if total >= 25 %}Offerte{% else %}0,00 €{% endif %}</span>
             </div>
 
-            <div class="free-shipping">
-                Livraison offerte dès 25 € d'achat !
+            {% if total >= 25 %}
+            <div class="free-shipping">Livraison offerte !</div>
+            {% else %}
+            <div class="free-shipping pending">
+                Plus que {{ "%.2f"|format(25 - total) }} € pour la livraison offerte !
             </div>
-
-            <hr>
+            {% endif %}
 
             <div class="summary-total">
                 <span>Total</span>
-                <strong>42,49 €</strong>
+                <strong>{{ "%.2f"|format(total) }} €</strong>
             </div>
 
-            <button>Commander</button>
+            <button id="checkout-btn">Commander</button>
 
             <p class="secure-payment">Paiement 100% sécurisé</p>
 
@@ -112,6 +122,136 @@
 
     </div>
 
+    {% else %}
+
+    <div class="cart-empty">
+        <div class="cart-empty-icon">🛍️</div>
+        <h2>Votre panier est vide</h2>
+        <p>Ajoutez des bracelets depuis la boutique pour commencer.</p>
+        <a href="/boutique" class="btn-gold">Voir la boutique</a>
+    </div>
+
+    {% endif %}
+
 </section>
+
+<!-- Checkout Modal Overlay -->
+<div class="modal-overlay" id="checkout-modal">
+    <div class="modal-box">
+        <button class="modal-close" id="modal-close-btn" aria-label="Fermer">✕</button>
+        <h2>Finaliser ma commande</h2>
+        <p>Veuillez renseigner vos informations de livraison.</p>
+        
+        <form method="POST" action="/commander">
+            <div class="form-group">
+                <label for="checkout-tel">Numéro de téléphone</label>
+                <input type="tel" id="checkout-tel" name="telephone" placeholder="Ex : 06 12 34 56 78" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="checkout-address">Adresse de livraison</label>
+                <input type="text" id="checkout-address" name="adresse" placeholder="Ex : 12 Rue de la Paix" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="checkout-city">Code Postal & Ville</label>
+                <input type="text" id="checkout-city" name="ville" placeholder="Ex : 75001 Paris" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="checkout-payment">Mode de paiement</label>
+                <select id="checkout-payment" name="paiement" required>
+                    <option value="carte">💳 Carte bancaire</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="apple">Apple Pay</option>
+                </select>
+            </div>
+            
+            <button type="submit">Valider et payer ({{ "%.2f"|format(total) }} €)</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Map colors to hex values
+        const colorMap = {
+            "Rose poudré": "#f472b6",
+            "Blanc nacré": "#f1f5f9",
+            "Doré": "#fbbf24",
+            "Bleu ciel": "#38bdf8",
+            "Noir élégant": "#334155"
+        };
+
+        // Render custom mini bracelets
+        document.querySelectorAll(".mini-bracelet[data-texte]").forEach(el => {
+            const text = el.getAttribute("data-texte").toUpperCase();
+            const colorName = el.getAttribute("data-couleur");
+            const beadType = el.getAttribute("data-perles");
+            const baseColor = colorMap[colorName] || "#f472b6";
+
+            // Clear static structure
+            el.innerHTML = "";
+
+            // Set background style for beads
+            let beadStyle = "";
+            if (beadType === "Perles nacrées") {
+                beadStyle = `background: radial-gradient(circle at 35% 35%, #ffffff 0%, ${baseColor} 70%, #94a3b8 100%) !important;`;
+            } else if (beadType === "Perles dorées") {
+                beadStyle = `background: radial-gradient(circle at 35% 35%, #ffe4e6 0%, #fbbf24 60%, #b45309 100%) !important; border-color: #d97706 !important;`;
+            } else {
+                beadStyle = `background: ${baseColor} !important; border-color: rgba(255, 255, 255, 0.2) !important;`;
+            }
+
+            // Append 2 left spacer beads
+            for (let i = 0; i < 2; i++) {
+                const span = document.createElement("span");
+                span.setAttribute("style", beadStyle);
+                el.appendChild(span);
+            }
+
+            // Append letter beads (up to 5 characters)
+            const lettersToShow = text.substring(0, 5);
+            for (let char of lettersToShow) {
+                if (char === " ") continue;
+                const strong = document.createElement("strong");
+                strong.innerText = char;
+                strong.style.background = "rgba(255, 255, 255, 0.90)";
+                strong.style.color = "#1a1b2e";
+                strong.style.borderColor = "rgba(255, 255, 255, 0.95)";
+                el.appendChild(strong);
+            }
+
+            // Append 2 right spacer beads
+            for (let i = 0; i < 2; i++) {
+                const span = document.createElement("span");
+                span.setAttribute("style", beadStyle);
+                el.appendChild(span);
+            }
+        });
+
+        // Checkout modal interactions
+        const checkoutBtn = document.getElementById("checkout-btn");
+        const checkoutModal = document.getElementById("checkout-modal");
+        const modalCloseBtn = document.getElementById("modal-close-btn");
+
+        if (checkoutBtn && checkoutModal) {
+            checkoutBtn.addEventListener("click", () => {
+                checkoutModal.classList.add("open");
+            });
+        }
+
+        if (modalCloseBtn && checkoutModal) {
+            modalCloseBtn.addEventListener("click", () => {
+                checkoutModal.classList.remove("open");
+            });
+            checkoutModal.addEventListener("click", (e) => {
+                if (e.target === checkoutModal) {
+                    checkoutModal.classList.remove("open");
+                }
+            });
+        }
+    });
+</script>
 
 {% endblock %}

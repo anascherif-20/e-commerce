@@ -6,7 +6,7 @@ connection_pool = pooling.MySQLConnectionPool(
     pool_size=5,
     host="localhost",
     user="root",
-    password="",
+    password="amine",
     database="ecommerce"
 )
 

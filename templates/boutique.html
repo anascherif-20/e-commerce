@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Boutique — Lunéa Atelier{% endblock %}
+
 {% block content %}
 
 <section class="shop-hero">
@@ -11,21 +13,25 @@
 </section>
 
 <section class="shop-categories">
-    <a href="/boutique" class="category-card">Tous</a>
-    <a href="/boutique?categorie=prenom" class="category-card">Bracelets prénom</a>
-    <a href="/boutique?categorie=enfants" class="category-card">Bracelets enfants</a>
-    <a href="/boutique?categorie=cadeaux" class="category-card">Bracelets cadeaux</a>
-    <a href="/boutique?categorie=premium" class="category-card">Créations premium</a>
+    <a href="/boutique" class="category-card {% if not request.args.get('categorie') %}active{% endif %}">Tous</a>
+    <a href="/boutique?categorie=prenom" class="category-card {% if request.args.get('categorie') == 'prenom' %}active{% endif %}">Bracelets prénom</a>
+    <a href="/boutique?categorie=enfants" class="category-card {% if request.args.get('categorie') == 'enfants' %}active{% endif %}">Bracelets enfants</a>
+    <a href="/boutique?categorie=cadeaux" class="category-card {% if request.args.get('categorie') == 'cadeaux' %}active{% endif %}">Bracelets cadeaux</a>
+    <a href="/boutique?categorie=premium" class="category-card {% if request.args.get('categorie') == 'premium' %}active{% endif %}">Créations premium</a>
 </section>
 
 <section class="shop-products">
 
     {% for produit in produits %}
     <div class="product-luxury">
-        <div class="product-placeholder">
+        <div class="product-image">
+            {% if produit.image %}
+            <img src="{{ url_for('static', filename=produit.image) }}" alt="{{ produit.nom }}" loading="lazy">
+            {% else %}
             <div class="fake-bracelet">
                 <span></span><span></span><strong>{{ produit.nom[0] }}</strong><span></span><span></span>
             </div>
+            {% endif %}
         </div>
 
         <div class="product-content">
@@ -33,8 +39,20 @@
             <h3>{{ produit.nom }}</h3>
             <p>{{ produit.description }}</p>
             <strong>{{ produit.prix }} €</strong>
-            <a href="/personnalisation">Personnaliser</a>
+            <div class="product-actions">
+                <a href="/personnalisation" class="btn-perso">Personnaliser</a>
+                <form method="POST" action="/ajouter/{{ produit.id }}">
+                    <button type="submit" class="btn-cart">+ Panier</button>
+                </form>
+            </div>
         </div>
+    </div>
+    {% else %}
+    <div class="shop-empty">
+        <div class="cart-empty-icon">🔍</div>
+        <h2>Aucune création trouvée</h2>
+        <p>Il n'y a pas encore de bracelet dans cette catégorie.</p>
+        <a href="/boutique" class="btn-gold">Voir toutes les créations</a>
     </div>
     {% endfor %}
 

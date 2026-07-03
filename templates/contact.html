@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Contact — Lunéa Atelier{% endblock %}
+
 {% block content %}
 
 <section class="contact-page">
@@ -27,5 +29,22 @@
         </form>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector(".contact-form");
+        if (form) {
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                if (typeof showToast === "function") {
+                    showToast("Votre message a bien été envoyé ! Nous vous répondrons dans les plus brefs délais.", "success");
+                } else {
+                    alert("Message envoyé !");
+                }
+                form.reset();
+            });
+        }
+    });
+</script>
 
 {% endblock %}

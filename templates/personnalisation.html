@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}Personnalisation — Lunéa Atelier{% endblock %}
+
 {% block content %}
 
 <section class="custom-page">
 
     <div class="custom-intro">
         <span>Création sur mesure</span>
-        <h1>Personnalise ton bracelet</h1>
-        <p>Choisis les couleurs, la taille, le prénom et le style de ton bracelet.</p>
+        <h1>Personnalise <span class="grad-text">ton bracelet</span></h1>
+        <p>Choisis les couleurs, la taille, le prénom et le style — l'aperçu se met à jour en direct.</p>
     </div>
 
     <div class="custom-container">
@@ -15,28 +17,21 @@
         <div class="custom-preview">
             <h2>Aperçu du bracelet</h2>
 
-            <div class="bracelet-demo">
-                <span></span>
-                <span></span>
-                <span></span>
-                <strong>A</strong>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <div class="bracelet-demo" id="bracelet-preview" aria-live="polite"></div>
 
             <p class="preview-text">
-                Exemple visuel de bracelet personnalisé avec perles et lettre.
+                Ton bracelet se dessine en temps réel : tape un prénom, change la couleur,
+                la taille ou le type de perles pour voir le résultat instantanément.
             </p>
         </div>
 
-        <form class="custom-form">
+        <form class="custom-form" id="perso-form" method="POST" action="/personnalisation/ajouter">
 
-            <label>Prénom ou texte</label>
-            <input type="text" placeholder="Ex : Lina">
+            <label for="perso-texte">Prénom ou texte</label>
+            <input id="perso-texte" name="texte" type="text" placeholder="Ex : Lina" maxlength="10" autocomplete="off">
 
-            <label>Couleur principale</label>
-            <select>
+            <label for="perso-couleur">Couleur principale</label>
+            <select id="perso-couleur" name="couleur">
                 <option>Rose poudré</option>
                 <option>Blanc nacré</option>
                 <option>Doré</option>
@@ -44,27 +39,27 @@
                 <option>Noir élégant</option>
             </select>
 
-            <label>Taille du bracelet</label>
-            <select>
+            <label for="perso-taille">Taille du bracelet</label>
+            <select id="perso-taille" name="taille">
                 <option>Enfant</option>
                 <option>Adolescent</option>
-                <option>Adulte</option>
+                <option selected>Adulte</option>
             </select>
 
-            <label>Type de perles</label>
-            <select>
+            <label for="perso-perles">Type de perles</label>
+            <select id="perso-perles" name="type_perles">
                 <option>Petites perles</option>
                 <option>Perles moyennes</option>
                 <option>Perles nacrées</option>
                 <option>Perles dorées</option>
             </select>
 
-            <label>Quantité</label>
-            <input type="number" value="1" min="1">
+            <label for="perso-quantite">Quantité</label>
+            <input id="perso-quantite" name="quantite" type="number" value="1" min="1" max="20">
 
             <div class="price-box">
                 <span>Prix estimé</span>
-                <strong>19,99 €</strong>
+                <strong id="prix-estime">19,99 €</strong>
             </div>
 
             <button type="submit">Ajouter au panier</button>
@@ -74,5 +69,69 @@
     </div>
 
 </section>
+
+<script>
+    /* ---- Live bracelet preview ---- */
+    const $ = (id) => document.getElementById(id);
+
+    const COULEURS = {
+        'Rose poudré':  'rose',
+        'Blanc nacré':  'blanc',
+        'Doré':         'dore',
+        'Bleu ciel':    'bleu',
+        'Noir élégant': 'noir'
+    };
+    const TAILLES = {
+        'Enfant':     { bead: 30, base: 14.99 },
+        'Adolescent': { bead: 34, base: 17.99 },
+        'Adulte':     { bead: 38, base: 19.99 }
+    };
+    const PERLES = {
+        'Petites perles':  0,
+        'Perles moyennes': 1,
+        'Perles nacrées':  2,
+        'Perles dorées':   3
+    };
+
+    function renderBracelet() {
+        const brut    = $('perso-texte').value.trim() || 'Lina';
+        const lettres = brut.toUpperCase().replace(/[^A-Z0-9À-ÖØ-Þ]/g, '').slice(0, 10) || 'LINA';
+        const couleur = COULEURS[$('perso-couleur').value] || 'rose';
+        const taille  = TAILLES[$('perso-taille').value]   || TAILLES['Adulte'];
+        const supplement = PERLES[$('perso-perles').value] || 0;
+        const quantite   = Math.max(1, parseInt($('perso-quantite').value, 10) || 1);
+
+        /* Beads: 3 colored fillers, one letter bead per character, 3 colored fillers */
+        const zone = $('bracelet-preview');
+        zone.innerHTML = '';
+        const beads = [];
+        for (let i = 0; i < 3; i++) beads.push({ type: couleur });
+        for (const l of lettres)    beads.push({ type: 'letter', char: l });
+        for (let i = 0; i < 3; i++) beads.push({ type: couleur });
+
+        beads.forEach((b, i) => {
+            const el = document.createElement('span');
+            el.className = 'bead ' + (b.type === 'letter' ? 'letter' : b.type);
+            el.style.setProperty('--bead', taille.bead + 'px');
+            el.style.animationDelay = (i * 30) + 'ms';
+            if (b.char) el.textContent = b.char;
+            zone.appendChild(el);
+        });
+
+        /* Price: base by size + bead supplement + 0.50 € per letter beyond 4 */
+        const prix = (taille.base + supplement + Math.max(0, lettres.length - 4) * 0.5) * quantite;
+        const cible = $('prix-estime');
+        cible.textContent = prix.toFixed(2).replace('.', ',') + ' €';
+        cible.classList.remove('bump');
+        void cible.offsetWidth;
+        cible.classList.add('bump');
+    }
+
+    ['perso-texte', 'perso-couleur', 'perso-taille', 'perso-perles', 'perso-quantite'].forEach(id => {
+        $(id).addEventListener('input', renderBracelet);
+        $(id).addEventListener('change', renderBracelet);
+    });
+    renderBracelet();
+</script>
 
 {% endblock %}
