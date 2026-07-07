@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets / environnement local
+.env
+
+# Outils locaux
+.claude/
+.vercel
+.DS_Store
